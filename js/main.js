@@ -1,69 +1,96 @@
 
+document.addEventListener("DOMContentLoaded", function () {
 
+    const formulario = document.getElementById("contactForm");
+    const boton = document.getElementById("btnEnviar");
+    const mensaje = document.getElementById("formMessage");
+
+    if (!formulario || !boton || !mensaje) return;
+
+    const contenidoOriginal = boton.innerHTML;
+
+    formulario.addEventListener("submit", async function (event) {
+
+        // Evita que el navegador cambie de página
+        event.preventDefault();
+
+        if (!formulario.reportValidity()) return;
+
+        // Estado de envío
+        boton.disabled = true;
+        boton.textContent = "Enviando solicitud...";
+
+        mensaje.style.display = "none";
+        mensaje.textContent = "";
+
+        try {
+
+            const datos = new FormData(formulario);
+
+            // Endpoint AJAX de FormSubmit
+            const respuesta = await fetch(
+                "https://formsubmit.co/ajax/evolucocodedigital@gmail.com",
+                {
+                    method: "POST",
+                    body: datos,
+                    headers: {
+                        "Accept": "application/json"
+                    }
+                }
+            );
+
+            if (!respuesta.ok) {
+                throw new Error("Error HTTP: " + respuesta.status);
+            }
+
+            const resultado = await respuesta.json();
+
+            if (
+                resultado.success !== true &&
+                resultado.success !== "true"
+            ) {
+                throw new Error(
+                    resultado.message || "No se confirmó el envío"
+                );
+            }
+
+            // Mostrar confirmación
+            mensaje.textContent =
+                "¡Solicitud enviada correctamente! " +
+                "Gracias por contactar a Evolucocode Digital. " +
+                "Pronto nos pondremos en contacto contigo.";
+
+            mensaje.className = "form-message success";
+            mensaje.style.display = "block";
+
+            // Limpiar campos
+            formulario.reset();
+
+        } catch (error) {
+
+            console.error("Error al enviar formulario:", error);
+
+            mensaje.textContent =
+                "No fue posible enviar tu solicitud. " +
+                "Por favor, intenta nuevamente.";
+
+            mensaje.className = "form-message error";
+            mensaje.style.display = "block";
+
+        } finally {
+
+            // Restaurar botón
+            boton.disabled = false;
+            boton.innerHTML = contenidoOriginal;
+
+        }
+
+    });
+
+});
 const menuToggle = document.getElementById("menuToggle");
 const nav = document.getElementById("nav");
 
-
-
-const formulario = document.getElementById("contactForm");
-const boton = document.getElementById("btnEnviar");
-const mensaje = document.getElementById("formMessage");
-
-formulario.addEventListener("submit", async function (event) {
-    event.preventDefault();
-
-    if (!formulario.reportValidity()) return;
-
-    boton.disabled = true;
-    boton.textContent = "Enviando...";
-
-    mensaje.style.display = "none";
-
-    try {
-        const datos = new FormData(formulario);
-
-        const respuesta = await fetch(
-            "https://formsubmit.co/evolucocodedigital@gmail.com",
-            {
-                method: "POST",
-                body: datos,
-                headers: {
-                    "Accept": "application/json"
-                }
-            }
-        );
-
-        const resultado = await respuesta.json();
-
-        if (!respuesta.ok || resultado.success === false ||
-            resultado.success === "false") {
-            throw new Error("No se pudo enviar la solicitud");
-        }
-
-        mensaje.textContent =
-            "¡Solicitud enviada correctamente! " +
-            "Pronto nos pondremos en contacto contigo.";
-
-        mensaje.className = "form-message success";
-        mensaje.style.display = "block";
-
-        formulario.reset();
-
-    } catch (error) {
-        mensaje.textContent =
-            "No pudimos enviar tu solicitud. " +
-            "Por favor, intenta nuevamente.";
-
-        mensaje.className = "form-message error";
-        mensaje.style.display = "block";
-
-        console.error("Error al enviar:", error);
-
-    } finally {
-        boton.disabled = false;
-        boton.textContent = "Enviar solicitud";
-    }
-});
 
 
 menuToggle.addEventListener("click", () => {
