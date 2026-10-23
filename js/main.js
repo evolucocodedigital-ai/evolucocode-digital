@@ -3,6 +3,69 @@
 const menuToggle = document.getElementById("menuToggle");
 const nav = document.getElementById("nav");
 
+
+
+const formulario = document.getElementById("contactForm");
+const boton = document.getElementById("btnEnviar");
+const mensaje = document.getElementById("formMessage");
+
+formulario.addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    if (!formulario.reportValidity()) return;
+
+    boton.disabled = true;
+    boton.textContent = "Enviando...";
+
+    mensaje.style.display = "none";
+
+    try {
+        const datos = new FormData(formulario);
+
+        const respuesta = await fetch(
+            "https://formsubmit.co/ajax/TU_CORREO@ejemplo.com",
+            {
+                method: "POST",
+                body: datos,
+                headers: {
+                    "Accept": "application/json"
+                }
+            }
+        );
+
+        const resultado = await respuesta.json();
+
+        if (!respuesta.ok || resultado.success === false ||
+            resultado.success === "false") {
+            throw new Error("No se pudo enviar la solicitud");
+        }
+
+        mensaje.textContent =
+            "¡Solicitud enviada correctamente! " +
+            "Pronto nos pondremos en contacto contigo.";
+
+        mensaje.className = "form-message success";
+        mensaje.style.display = "block";
+
+        formulario.reset();
+
+    } catch (error) {
+        mensaje.textContent =
+            "No pudimos enviar tu solicitud. " +
+            "Por favor, intenta nuevamente.";
+
+        mensaje.className = "form-message error";
+        mensaje.style.display = "block";
+
+        console.error("Error al enviar:", error);
+
+    } finally {
+        boton.disabled = false;
+        boton.textContent = "Enviar solicitud";
+    }
+});
+
+
 menuToggle.addEventListener("click", () => {
 
     nav.classList.toggle("active");
