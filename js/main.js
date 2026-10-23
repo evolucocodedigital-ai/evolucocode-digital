@@ -23,7 +23,7 @@ formulario.addEventListener("submit", async function (event) {
         const datos = new FormData(formulario);
 
         const respuesta = await fetch(
-            "https://formsubmit.co/ajax/TU_CORREO@ejemplo.com",
+            "https://formsubmit.co/evolucocodedigital@gmail.com",
             {
                 method: "POST",
                 body: datos,
